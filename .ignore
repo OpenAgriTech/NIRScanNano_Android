@@ -1,2 +1,10 @@
 .iml
-.idea
+.idea/
+.DS_Store
+gradle/
+.gradle/
+gradlew
+gradlew.bat
+local.properties
+app/app.iml
+MPChartLib/MPChartLib.iml
