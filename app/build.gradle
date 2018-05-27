@@ -8,7 +8,7 @@ android {
     compileSdkVersion 23
 
     defaultConfig {
-        applicationId "com.kstechnologies.NanoScan"
+        applicationId "com.amairs.NanoScan"
         minSdkVersion 21
         targetSdkVersion 22
         versionCode 13
