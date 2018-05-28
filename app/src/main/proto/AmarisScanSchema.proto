@@ -1,0 +1,24 @@
+syntax="proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.amaris.scan";
+option java_outer_classname = "AmarisScan";
+
+// The greeting service definition.
+service AmarisService {
+  // Sends a greeting
+  rpc StoreToELK (AmarisSchema) returns (ServerResponse) {}
+}
+
+// The request message containing the user's name.
+message AmarisSchema {
+  float Wavelength = 1;
+  string Intensity = 2;
+  float Absorbance = 3;
+  float Reflectance = 4;
+}
+
+// The response message containing the greetings
+message ServerResponse {
+  string message = 1;
+}
