@@ -11,24 +11,24 @@
     <string name="title_activity_settings">Settings</string>
 
     <string-array name="info_title_array">
-        <item>TI DLP Website</item>
-        <item>KST DLP Website</item>
-        <item>Purchase a NIRScan Nano</item>
+        <item>Amaris AI</item>
+        <item>Amaris Website</item>
+        <item>Amaris Nano</item>
         <item>Support Forums</item>
     </string-array>
 
     <string-array name="info_body_array">
         <item>Learn how TI is revolutionizing mobile spectroscopy</item>
-        <item>Learn about KST, TI\'s Strategic Design Partner</item>
+        <item>Learn about Amaris, TI\'s Strategic Design Partner</item>
         <item>Learn how to buy your own Evaluation Module</item>
         <item>Go deep with TI\'s E2E Technical Support Forums</item>
     </string-array>
 
     <string-array name="info_url_array">
-        <item>http://www.ti.com/lsds/ti/dlp/advanced-light-control/wavelength-control.page</item>
-        <item>https://www.kstechnologies.com/spectroscopy</item>
-        <item>http://www.ti.com/tool/dlpnirnanoevm</item>
-        <item>http://e2e.ti.com/support/dlp__mems_micro-electro-mechanical_systems/f/983</item>
+        <item>https://www.amaris.ai</item>
+        <item>https://www.amaris.ai</item>
+        <item>https://www.amaris.ai</item>
+        <item>https://www.amaris.ai</item>
     </string-array>
 
     <string name="temperature">Temperature</string>
@@ -106,7 +106,7 @@
     <string name="nano">Nano</string>
     <string name="save_to_sd">Save to SD Card?</string>
     <string name="save_to_android">Save to Android Device?</string>
-    <string name="cont_scan">Continuous Scan?</string>
+    <string name="cont_scan">Connect Amaris Server?</string>
     <string name="scan_conf">Scan Configuration</string>
     <string name="col_1">Column 1</string>
     <string name="hadamard">Hadamard</string>
