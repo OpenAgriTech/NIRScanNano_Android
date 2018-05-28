@@ -17,7 +17,7 @@
         android:contentDescription="@string/desc_info"
         android:paddingEnd="@dimen/dip32"
         android:paddingStart="@dimen/dip32"
-        android:src="@drawable/ic_info" />
+        android:src="@drawable/xv_no_bg" />
 
     <ListView
         android:id="@+id/lv_info"

@@ -169,10 +169,33 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/ll_amairs"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dip40"
+                    android:layout_below="@id/ll_os">
+
+                    <TextView
+                        android:id="@+id/tv_amaris"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/cont_scan"
+                        android:textAppearance="?android:textAppearanceMedium" />
+
+                    <ToggleButton
+                        android:id="@+id/btn_amaris"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dip40"
+                        android:textOff="No"
+                        android:textOn="Yes" />
+
+                </LinearLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/px1"
-                    android:layout_below="@id/ll_continuous"
+                    android:layout_below="@id/ll_amairs"
                     android:background="@color/gray" />
 
                 <LinearLayout

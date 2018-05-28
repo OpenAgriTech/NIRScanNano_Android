@@ -19,7 +19,7 @@
             android:layout_width="@dimen/dip96"
             android:layout_height="@dimen/dip96"
             android:contentDescription="@string/desc_icon"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@mipmap/logo" />
 
         <TextView
             android:id="@+id/tv_version"
