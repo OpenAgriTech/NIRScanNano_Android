@@ -13,7 +13,7 @@ service AmarisService {
 // The request message containing the user's name.
 message AmarisSchema {
   float Wavelength = 1;
-  string Intensity = 2;
+  int64 Intensity = 2;
   float Absorbance = 3;
   float Reflectance = 4;
 }
