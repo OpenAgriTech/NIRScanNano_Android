@@ -790,6 +790,7 @@ public class NewScanActivity extends Activity {
                 ab.setSelectedNavigationItem(0);
             }
 
+            sendToGrpcServer(results);
             boolean saveOS = btn_os.isChecked();
             boolean continuous = btn_continuous.isChecked();
 
@@ -843,6 +844,26 @@ public class NewScanActivity extends Activity {
         }
     }
 
+
+    /**
+     * here is for grpc client
+     * which sends data to server
+     * @param scanResults the {@link KSTNanoSDK.ScanResults} structure to save
+     */
+    private void sendToGrpcServer(KSTNanoSDK.ScanResults scanResults){
+
+        int grpcIndex;
+        for (grpcIndex = 0; grpcIndex < scanResults.getLength(); grpcIndex++) {
+            double waves = scanResults.getWavelength()[grpcIndex];
+            int Intensity = scanResults.getUncalibratedIntensity()[grpcIndex];
+            float absorb = (-1) * (float) Math.log10((double) scanResults.getUncalibratedIntensity()[grpcIndex] / (double) scanResults.getIntensity()[grpcIndex]);
+            float reflect = (float) results.getUncalibratedIntensity()[grpcIndex] / results.getIntensity()[grpcIndex];
+            GrpcTask task = new GrpcTask(this);
+            String [] grpcdata = new String[]{String.valueOf(waves), String.valueOf(Intensity), String.valueOf(absorb), String.valueOf(reflect)};
+            String result = task.doInBackground(grpcdata);
+            //Toast.makeText(result,100l)
+        }
+    }
     /**
      * Write scan data to CSV file
      * @param currentTime the current time to save

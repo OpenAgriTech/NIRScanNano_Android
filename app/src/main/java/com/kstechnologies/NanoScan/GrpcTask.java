@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.os.AsyncTask;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.amaris.scan.AmarisSchema;
+import io.grpc.amaris.scan.AmarisServiceGrpc;
+import io.grpc.amaris.scan.ServerResponse;
+
 
 public  class GrpcTask extends AsyncTask<String, Void, String> {
     private final WeakReference<Activity> activityReference;
@@ -15,23 +19,23 @@ public  class GrpcTask extends AsyncTask<String, Void, String> {
 
     public GrpcTask(Activity activity){
 
-        this.activityReference = new WeakReference<Activity>(activity);
+        this.activityReference = new WeakReference<>(activity);
     }
     @Override
-    protected String doInBackground(String... strings) {
+    protected String doInBackground(String... data) {
 
-//        channel = ManagedChannelBuilder.forAddress("localhost",7079).build();
-//        GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(channel);
-//        HelloRequest request = HelloRequest.newBuilder().setName("amaris").build();
-//
-//        HelloReply reply = stub.sayHello(request);stub.sayHello(request);
-        //Todo
-        // new api for grpc
-        //CSV.schema sendServer(proto)
-//        GrpcTask gt = new GrpcTask(this);
-//        ArrayList<String> array = new ArrayList<>();
-//        gt.doInBackground((String[]) array.toArray());
-        return "";//reply.getMessage();
+        channel = ManagedChannelBuilder.forAddress("192.168.135",7079).build();
+        AmarisServiceGrpc.AmarisServiceBlockingStub stub = AmarisServiceGrpc.newBlockingStub(channel);
+        AmarisSchema request = AmarisSchema.newBuilder()
+                .setWavelength(data[0])
+                .setIntensity(data[1])
+                .setAbsorbance(data[2])
+                .setReflectance(data[3])
+                .build();
+
+        ServerResponse reply = stub.storeToELK(request);
+
+        return reply.getMessage();
     }
 
     @Override
