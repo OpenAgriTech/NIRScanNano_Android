@@ -6,7 +6,7 @@ option java_outer_classname = "AmarisScan";
 
 // The method service definition.
 service AmarisService {
-  // Sends a greeting
+  // Sends  data
   rpc StoreToELK (AmarisSchema) returns (ServerResponse) {}
 }
 

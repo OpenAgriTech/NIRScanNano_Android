@@ -24,7 +24,7 @@ public  class GrpcTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... data) {
 
-        channel = ManagedChannelBuilder.forAddress("192.168.135",7079).build();
+        channel = ManagedChannelBuilder.forAddress("192.168.1.35",7079).build();
         AmarisServiceGrpc.AmarisServiceBlockingStub stub = AmarisServiceGrpc.newBlockingStub(channel);
         AmarisSchema request = AmarisSchema.newBuilder()
                 .setWavelength(data[0])
