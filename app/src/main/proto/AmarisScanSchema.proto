@@ -4,21 +4,21 @@ option java_multiple_files = true;
 option java_package = "io.grpc.amaris.scan";
 option java_outer_classname = "AmarisScan";
 
-// The greeting service definition.
+// The method service definition.
 service AmarisService {
   // Sends a greeting
   rpc StoreToELK (AmarisSchema) returns (ServerResponse) {}
 }
 
-// The request message containing the user's name.
+// The request message containing the nano data.
 message AmarisSchema {
-  float Wavelength = 1;
-  int64 Intensity = 2;
-  float Absorbance = 3;
-  float Reflectance = 4;
+  string Wavelength = 1;
+  string Intensity = 2;
+  string Absorbance = 3;
+  string Reflectance = 4;
 }
 
-// The response message containing the greetings
+// The response message
 message ServerResponse {
   string message = 1;
 }
