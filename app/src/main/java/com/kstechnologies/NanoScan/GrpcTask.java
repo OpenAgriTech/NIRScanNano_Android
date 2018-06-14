@@ -33,7 +33,9 @@ public class GrpcTask extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... strings) {
 
 
-        channel = ManagedChannelBuilder.forAddress("192.168.1.172", 7709).build();
+        channel = ManagedChannelBuilder.forAddress("192.168.1.172", 7709)
+                .usePlaintext(true)
+                .build();
         AmarisServiceGrpc.AmarisServiceBlockingStub stub = AmarisServiceGrpc.newBlockingStub(channel);
         AmarisSchemaList.AmarisSchema request;
         AmarisSchemaList list = null;
@@ -51,7 +53,7 @@ public class GrpcTask extends AsyncTask<String, Void, String> {
                         .setReflectance(data.getReflect())
                         .build();
                 list = AmarisSchemaList.newBuilder()
-                        .setSchema( (Integer) map.getKey(), request)
+                        .addSchema(request)
                         .build();
 
             }
