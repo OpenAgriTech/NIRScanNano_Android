@@ -22,12 +22,12 @@ public class GrpcTask extends AsyncTask<String, Void, String> {
     private final WeakReference<Activity> activityReference;
     private ManagedChannel channel;
 
-    private HashMap<Integer, ScanData> grpcData;
+    private ArrayList<AmarisSchemaList.AmarisSchema> values;
 
-    public GrpcTask(Activity activity, HashMap<Integer, ScanData> grpcData ) {
+    public GrpcTask(Activity activity, ArrayList<AmarisSchemaList.AmarisSchema> values) {
 
         this.activityReference = new WeakReference<>(activity);
-        this.grpcData = grpcData;
+        this.values = values;
     }
 
     @Override
@@ -38,32 +38,12 @@ public class GrpcTask extends AsyncTask<String, Void, String> {
                 .usePlaintext(true)
                 .build();
         AmarisServiceGrpc.AmarisServiceBlockingStub stub = AmarisServiceGrpc.newBlockingStub(channel);
-
-
-        ArrayList<AmarisSchemaList.AmarisSchema> values = new ArrayList<>();
-        String message = "";
-        if (grpcData != null) {
-            Set entrySet = grpcData.entrySet();
-            Iterator it = entrySet.iterator();
-            while (it.hasNext()) {
-                Map.Entry map = (Map.Entry) it.next();
-                ScanData data = (ScanData) map.getValue();
-                AmarisSchemaList.AmarisSchema request = AmarisSchemaList.AmarisSchema.newBuilder()
-                        .setWavelength(data.getWave())
-                        .setIntensity(data.getIntensity())
-                        .setAbsorbance(data.getAbsorb())
-                        .setReflectance(data.getReflect())
-                        .build();
-                values.add(request);
-
-            }
-
-            AmarisSchemaList list = AmarisSchemaList.newBuilder()
-                    .addAllSchema(values)
-                    .build();
-            ServerResponse reply = stub.storeToELK(list);
-            message = reply.getMessage();
-        }
+        String message;
+        AmarisSchemaList list = AmarisSchemaList.newBuilder()
+                .addAllSchema(values)
+                .build();
+        ServerResponse reply = stub.storeToELK(list);
+        message = reply.getMessage();
 
         return message;
     }

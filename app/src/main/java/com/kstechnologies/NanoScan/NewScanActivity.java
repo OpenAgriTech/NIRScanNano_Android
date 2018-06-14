@@ -63,17 +63,19 @@ import com.opencsv.CSVWriter;
 import com.kstechnologies.nirscannanolibrary.KSTNanoSDK;
 import com.kstechnologies.nirscannanolibrary.SettingsManager;
 
+import io.grpc.amaris.scan.AmarisSchemaList;
+
 /**
  * Activity controlling the Nano once it is connected
  * This activity allows a user to initiate a scan, as well as access other "connection-only"
  * settings. When first launched, the app will scan for a preferred device
  * for {@link NanoBLEService#SCAN_PERIOD}, if it is not found, then it will start another "open"
  * scan for any Nano.
- *
+ * <p>
  * If a preferred Nano has not been set, it will start a single scan. If at the end of scanning, a
  * Nano has not been found, a message will be presented to the user indicating and error, and the
  * activity will finish
- *
+ * <p>
  * WARNING: This activity uses JNI function calls for communicating with the Spectrum C library, It
  * is important that the name and file structure of this activity remain unchanged, or the functions
  * will NOT work
@@ -147,14 +149,14 @@ public class NewScanActivity extends Activity {
         calProgress.setVisibility(View.VISIBLE);
         connected = false;
 
-        ll_conf = (LinearLayout)findViewById(R.id.ll_conf);
+        ll_conf = (LinearLayout) findViewById(R.id.ll_conf);
         ll_conf.setClickable(false);
         ll_conf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(activeConf != null) {
+                if (activeConf != null) {
                     Intent activeConfIntent = new Intent(mContext, ActiveScanActivity.class);
-                    activeConfIntent.putExtra("conf",activeConf);
+                    activeConfIntent.putExtra("conf", activeConf);
                     startActivity(activeConfIntent);
                 }
             }
@@ -707,15 +709,15 @@ public class NewScanActivity extends Activity {
 
             String scanType = intent.getStringExtra(KSTNanoSDK.EXTRA_SCAN_TYPE);
             /*
-            * 7 bytes representing the current data
-            * byte0: uint8_t     year; //< years since 2000
-            * byte1: uint8_t     month; /**< months since January [0-11]
-            * byte2: uint8_t     day; /**< day of the month [1-31]
-            * byte3: uint8_t     day_of_week; /**< days since Sunday [0-6]
-            * byte3: uint8_t     hour; /**< hours since midnight [0-23]
-            * byte5: uint8_t     minute; //< minutes after the hour [0-59]
-            * byte6: uint8_t     second; //< seconds after the minute [0-60]
-            */
+             * 7 bytes representing the current data
+             * byte0: uint8_t     year; //< years since 2000
+             * byte1: uint8_t     month; /**< months since January [0-11]
+             * byte2: uint8_t     day; /**< day of the month [1-31]
+             * byte3: uint8_t     day_of_week; /**< days since Sunday [0-6]
+             * byte3: uint8_t     hour; /**< hours since midnight [0-23]
+             * byte5: uint8_t     minute; //< minutes after the hour [0-59]
+             * byte6: uint8_t     second; //< seconds after the minute [0-60]
+             */
             String scanDate = intent.getStringExtra(KSTNanoSDK.EXTRA_SCAN_DATE);
 
             KSTNanoSDK.ReferenceCalibration ref = KSTNanoSDK.ReferenceCalibration.currentCalibration.get(0);
@@ -849,33 +851,33 @@ public class NewScanActivity extends Activity {
     /**
      * here is for grpc client
      * which sends data to server
+     *
      * @param scanResults the {@link KSTNanoSDK.ScanResults} structure to save
      */
-    private void sendToGrpcServer(KSTNanoSDK.ScanResults scanResults){
+    private void sendToGrpcServer(KSTNanoSDK.ScanResults scanResults) {
 
         int grpcIndex;
-        HashMap<Integer,ScanData> grpcdata = new HashMap<>();
-
+        ArrayList<AmarisSchemaList.AmarisSchema> values = new ArrayList<>();
         for (grpcIndex = 0; grpcIndex < scanResults.getLength(); grpcIndex++) {
-
-            ScanData rawData = new ScanData();
-
-            rawData.setWave( String.valueOf(scanResults.getWavelength()[grpcIndex]));
-            rawData.setIntensity(String.valueOf(scanResults.getUncalibratedIntensity()[grpcIndex]));
-            rawData.setAbsorb(String.valueOf((-1)* (float) Math.log10((double) scanResults.getUncalibratedIntensity()[grpcIndex] / (double) scanResults.getIntensity()[grpcIndex])));
-            rawData.setReflect( String.valueOf((float) results.getUncalibratedIntensity()[grpcIndex] / results.getIntensity()[grpcIndex]));
-            //String [] data = new String[]{String.valueOf(waves), String.valueOf(Intensity), String.valueOf(absorb), String.valueOf(reflect)};
-            grpcdata.put(grpcIndex,rawData);
+            AmarisSchemaList.AmarisSchema request = AmarisSchemaList.AmarisSchema.newBuilder()
+                    .setWavelength(String.valueOf(scanResults.getWavelength()[grpcIndex]))
+                    .setIntensity(String.valueOf(scanResults.getUncalibratedIntensity()[grpcIndex]))
+                    .setAbsorbance(String.valueOf((-1) * (float) Math.log10((double) scanResults.getUncalibratedIntensity()[grpcIndex] / (double) scanResults.getIntensity()[grpcIndex])))
+                    .setReflectance(String.valueOf((float) results.getUncalibratedIntensity()[grpcIndex] / results.getIntensity()[grpcIndex]))
+                    .build();
+            values.add(request);
 
         }
-        GrpcTask task = new GrpcTask(this,grpcdata);
-        String result = task.doInBackground();
+        GrpcTask task = new GrpcTask(this, values);
+        task.doInBackground();
     }
+
     /**
      * Write scan data to CSV file
+     *
      * @param currentTime the current time to save
      * @param scanResults the {@link KSTNanoSDK.ScanResults} structure to save
-     * @param saveOS boolean indicating if the CSV file should be saved to the OS
+     * @param saveOS      boolean indicating if the CSV file should be saved to the OS
      */
     private void writeCSV(String currentTime, KSTNanoSDK.ScanResults scanResults, boolean saveOS) {
 
@@ -911,16 +913,17 @@ public class NewScanActivity extends Activity {
 
     /**
      * Write the dictionary for a CSV files
+     *
      * @param currentTime the current time to be saved
-     * @param scanType the scan type to be saved
-     * @param timeStamp the timestamp to be saved
-     * @param spectStart the spectral range start
-     * @param spectEnd the spectral range end
-     * @param numPoints the number of data points
-     * @param resolution the scan resolution
+     * @param scanType    the scan type to be saved
+     * @param timeStamp   the timestamp to be saved
+     * @param spectStart  the spectral range start
+     * @param spectEnd    the spectral range end
+     * @param numPoints   the number of data points
+     * @param resolution  the scan resolution
      * @param numAverages the number of scans to average
-     * @param measTime the total measurement time
-     * @param saveOS boolean indicating if this file should be saved to the OS
+     * @param measTime    the total measurement time
+     * @param saveOS      boolean indicating if this file should be saved to the OS
      */
     private void writeCSVDict(String currentTime, String scanType, String timeStamp, String spectStart, String spectEnd, String numPoints, String resolution, String numAverages, String measTime, boolean saveOS) {
 
@@ -973,7 +976,7 @@ public class NewScanActivity extends Activity {
                     (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             mBluetoothAdapter = bluetoothManager.getAdapter();
             mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-            if(mBluetoothLeScanner == null){
+            if (mBluetoothLeScanner == null) {
                 finish();
                 Toast.makeText(NewScanActivity.this, "Please ensure Bluetooth is enabled and try again", Toast.LENGTH_SHORT).show();
             }
@@ -1062,7 +1065,7 @@ public class NewScanActivity extends Activity {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if(mBluetoothLeScanner != null) {
+                    if (mBluetoothLeScanner != null) {
                         mBluetoothLeScanner.stopScan(mLeScanCallback);
                         if (!connected) {
                             notConnectedDialog();
@@ -1070,9 +1073,9 @@ public class NewScanActivity extends Activity {
                     }
                 }
             }, NanoBLEService.SCAN_PERIOD);
-            if(mBluetoothLeScanner != null) {
+            if (mBluetoothLeScanner != null) {
                 mBluetoothLeScanner.startScan(mLeScanCallback);
-            }else{
+            } else {
                 finish();
                 Toast.makeText(NewScanActivity.this, "Please ensure Bluetooth is enabled and try again", Toast.LENGTH_SHORT).show();
             }
@@ -1203,7 +1206,7 @@ public class NewScanActivity extends Activity {
             System.arraycopy(smallArray, 0, largeArray, 0, smallArray.length);
             System.arraycopy(addArray, 0, largeArray, smallArray.length, addArray.length);
 
-            Log.w("_JNI","largeArray Size: "+ largeArray.length);
+            Log.w("_JNI", "largeArray Size: " + largeArray.length);
             KSTNanoSDK.ScanConfiguration scanConf = KSTNanoSDK.KSTNanoSDK_dlpSpecScanReadConfiguration(intent.getByteArrayExtra(KSTNanoSDK.EXTRA_DATA));
             //KSTNanoSDK.ScanConfiguration scanConf = KSTNanoSDK.KSTNanoSDK_dlpSpecScanReadConfiguration(largeArray);
 
@@ -1220,6 +1223,7 @@ public class NewScanActivity extends Activity {
 
         }
     }
+
     /**
      * Broadcast Receiver handling the disconnect event. If the Nano disconnects,
      * this activity should finish so that the user is taken back to the {@link ScanListActivity}
