@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.opencsv.CSVWriter;
@@ -853,16 +854,22 @@ public class NewScanActivity extends Activity {
     private void sendToGrpcServer(KSTNanoSDK.ScanResults scanResults){
 
         int grpcIndex;
+        HashMap<Integer,ScanData> grpcdata = new HashMap<>();
+
         for (grpcIndex = 0; grpcIndex < scanResults.getLength(); grpcIndex++) {
-            double waves = scanResults.getWavelength()[grpcIndex];
-            int Intensity = scanResults.getUncalibratedIntensity()[grpcIndex];
-            float absorb = (-1) * (float) Math.log10((double) scanResults.getUncalibratedIntensity()[grpcIndex] / (double) scanResults.getIntensity()[grpcIndex]);
-            float reflect = (float) results.getUncalibratedIntensity()[grpcIndex] / results.getIntensity()[grpcIndex];
-            GrpcTask task = new GrpcTask(this);
-            String [] grpcdata = new String[]{String.valueOf(waves), String.valueOf(Intensity), String.valueOf(absorb), String.valueOf(reflect)};
-            String result = task.doInBackground(grpcdata);
-            //Toast.makeText(result,100l)
+
+            ScanData rawData = new ScanData();
+
+            rawData.setWave( String.valueOf(scanResults.getWavelength()[grpcIndex]));
+            rawData.setIntensity(String.valueOf(scanResults.getUncalibratedIntensity()[grpcIndex]));
+            rawData.setAbsorb(String.valueOf((-1)* (float) Math.log10((double) scanResults.getUncalibratedIntensity()[grpcIndex] / (double) scanResults.getIntensity()[grpcIndex])));
+            rawData.setReflect( String.valueOf((float) results.getUncalibratedIntensity()[grpcIndex] / results.getIntensity()[grpcIndex]));
+            //String [] data = new String[]{String.valueOf(waves), String.valueOf(Intensity), String.valueOf(absorb), String.valueOf(reflect)};
+            grpcdata.put(grpcIndex,rawData);
+
         }
+        GrpcTask task = new GrpcTask(this,grpcdata);
+        String result = task.doInBackground();
     }
     /**
      * Write scan data to CSV file

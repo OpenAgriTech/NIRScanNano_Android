@@ -1,4 +1,4 @@
-syntax="proto3";
+syntax = "proto3";
 
 option java_multiple_files = true;
 option java_package = "io.grpc.amaris.scan";
@@ -6,19 +6,23 @@ option java_outer_classname = "AmarisScan";
 
 // The method service definition.
 service AmarisService {
-  // Sends  data
-  rpc StoreToELK (AmarisSchema) returns (ServerResponse) {}
+    // Sends  data
+    rpc StoreToELK (AmarisSchemaList) returns (ServerResponse) {
+    }
 }
 
-// The request message containing the nano data.
-message AmarisSchema {
-  string Wavelength = 1;
-  string Intensity = 2;
-  string Absorbance = 3;
-  string Reflectance = 4;
+// The request message containing the nano data sets.
+message AmarisSchemaList {
+    message AmarisSchema {
+        string Wavelength = 1;
+        string Intensity = 2;
+        string Absorbance = 3;
+        string Reflectance = 4;
+    }
+    repeated AmarisSchema schema =1;
 }
 
 // The response message
 message ServerResponse {
-  string message = 1;
+    string message = 1;
 }
