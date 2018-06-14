@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -37,8 +38,9 @@ public class GrpcTask extends AsyncTask<String, Void, String> {
                 .usePlaintext(true)
                 .build();
         AmarisServiceGrpc.AmarisServiceBlockingStub stub = AmarisServiceGrpc.newBlockingStub(channel);
-        AmarisSchemaList.AmarisSchema request;
-        AmarisSchemaList list = null;
+
+
+        ArrayList<AmarisSchemaList.AmarisSchema> values = new ArrayList<>();
         String message = "";
         if (grpcData != null) {
             Set entrySet = grpcData.entrySet();
@@ -46,17 +48,19 @@ public class GrpcTask extends AsyncTask<String, Void, String> {
             while (it.hasNext()) {
                 Map.Entry map = (Map.Entry) it.next();
                 ScanData data = (ScanData) map.getValue();
-                 request = AmarisSchemaList.AmarisSchema.newBuilder()
+                AmarisSchemaList.AmarisSchema request = AmarisSchemaList.AmarisSchema.newBuilder()
                         .setWavelength(data.getWave())
                         .setIntensity(data.getIntensity())
                         .setAbsorbance(data.getAbsorb())
                         .setReflectance(data.getReflect())
                         .build();
-                list = AmarisSchemaList.newBuilder()
-                        .addSchema(request)
-                        .build();
+                values.add(request);
 
             }
+
+            AmarisSchemaList list = AmarisSchemaList.newBuilder()
+                    .addAllSchema(values)
+                    .build();
             ServerResponse reply = stub.storeToELK(list);
             message = reply.getMessage();
         }
