@@ -1,3 +1,11 @@
 /build
 local.properties
-
+.iml
+.idea/
+.DS_Store
+gradle/
+.gradle/
+gradlew
+gradlew.bat
+app/app.iml
+MPChartLib/MPChartLib.iml

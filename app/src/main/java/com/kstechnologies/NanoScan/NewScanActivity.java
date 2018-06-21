@@ -56,14 +56,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import com.opencsv.CSVWriter;
 import com.kstechnologies.nirscannanolibrary.KSTNanoSDK;
 import com.kstechnologies.nirscannanolibrary.SettingsManager;
-
-import io.grpc.amaris.scan.AmarisSchemaList;
 
 /**
  * Activity controlling the Nano once it is connected
@@ -783,17 +780,34 @@ public class NewScanActivity extends Activity {
             String ts = simpleDateFormat.format(new Date());
 
             ActionBar ab = getActionBar();
+            String nameTs = "";
             if (ab != null) {
 
                 if (filePrefix.getText().toString().equals("")) {
-                    ab.setTitle("Nano" + ts);
+                    nameTs = "Nano" + ts;
+                    ab.setTitle(nameTs);
+
                 } else {
-                    ab.setTitle(filePrefix.getText().toString() + ts);
+                    nameTs = filePrefix.getText().toString() + ts;
+                    ab.setTitle(nameTs);
                 }
                 ab.setSelectedNavigationItem(0);
             }
 
-            sendToGrpcServer(results);
+            ArrayList<String> dict = new ArrayList<>();
+
+            {
+                dict.add(scanType);
+                dict.add(scanDate);
+                dict.add(String.valueOf(minWavelength));
+                dict.add(String.valueOf(maxWavelength));
+                dict.add(String.valueOf(results.getLength()));
+                dict.add(String.valueOf(results.getLength()));
+                dict.add("1");
+                dict.add("2.00");
+
+            }
+            sendToGrpcServer(results,nameTs,dict);
             boolean saveOS = btn_os.isChecked();
             boolean continuous = btn_continuous.isChecked();
 
@@ -854,21 +868,9 @@ public class NewScanActivity extends Activity {
      *
      * @param scanResults the {@link KSTNanoSDK.ScanResults} structure to save
      */
-    private void sendToGrpcServer(KSTNanoSDK.ScanResults scanResults) {
+    private void sendToGrpcServer(KSTNanoSDK.ScanResults scanResults, String nameTs, ArrayList<String> dict) {
 
-        int grpcIndex;
-        ArrayList<AmarisSchemaList.AmarisSchema> values = new ArrayList<>();
-        for (grpcIndex = 0; grpcIndex < scanResults.getLength(); grpcIndex++) {
-            AmarisSchemaList.AmarisSchema request = AmarisSchemaList.AmarisSchema.newBuilder()
-                    .setWavelength(String.valueOf(scanResults.getWavelength()[grpcIndex]))
-                    .setIntensity(String.valueOf(scanResults.getUncalibratedIntensity()[grpcIndex]))
-                    .setAbsorbance(String.valueOf((-1) * (float) Math.log10((double) scanResults.getUncalibratedIntensity()[grpcIndex] / (double) scanResults.getIntensity()[grpcIndex])))
-                    .setReflectance(String.valueOf((float) results.getUncalibratedIntensity()[grpcIndex] / results.getIntensity()[grpcIndex]))
-                    .build();
-            values.add(request);
-
-        }
-        GrpcTask task = new GrpcTask(this, values);
+        GrpcTask task = new GrpcTask(this,scanResults,nameTs,dict);
         task.doInBackground();
     }
 
