@@ -811,7 +811,7 @@ public class NewScanActivity extends Activity {
             boolean saveOS = btn_os.isChecked();
             boolean continuous = btn_continuous.isChecked();
 
-            writeCSV(ts, results, saveOS);
+            //writeCSV(ts, results, saveOS);
             writeCSVDict(ts, scanType, scanDate, String.valueOf(minWavelength), String.valueOf(maxWavelength), String.valueOf(results.getLength()), String.valueOf(results.getLength()), "1", "2.00", saveOS);
 
             SettingsManager.storeStringPref(mContext, SettingsManager.SharedPreferencesKeys.prefix, filePrefix.getText().toString());
