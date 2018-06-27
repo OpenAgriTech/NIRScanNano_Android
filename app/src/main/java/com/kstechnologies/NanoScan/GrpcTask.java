@@ -2,6 +2,7 @@ package com.kstechnologies.NanoScan;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.kstechnologies.nirscannanolibrary.KSTNanoSDK;
 
@@ -17,18 +18,21 @@ import io.grpc.amaris.scan.ServerResponse;
 
 
 public class GrpcTask extends AsyncTask<String, Void, String> {
+
+    private static final String TAG = GrpcTask.class.getName();
+
     private final WeakReference<Activity> activityReference;
     private ManagedChannel channel;
 
     private String nameTs;
     private KSTNanoSDK.ScanResults scanResults;
-    private ArrayList<String> dictlist;
+    private ArrayList<String> dictList;
     public GrpcTask(Activity activity, KSTNanoSDK.ScanResults scanResults, String nameTs, ArrayList<String> dict) {
 
         this.activityReference = new WeakReference<>(activity);
         this.scanResults = scanResults;
         this.nameTs = nameTs;
-        this.dictlist = dict;
+        this.dictList = dict;
     }
 
     @Override
@@ -56,21 +60,21 @@ public class GrpcTask extends AsyncTask<String, Void, String> {
 
         DictSchema dictSchema = DictSchema.newBuilder()
                 .addAllSchema(values)
-                .setScanType(dictlist.get(0))
-                .setTimeStamp(dictlist.get(1))
-                .setSpectStart(dictlist.get(2))
-                .setSpectEnd(dictlist.get(3))
-                .setNumPoints(dictlist.get(4))
-                .setResolution(dictlist.get(5))
-                .setNumAverages(dictlist.get(6))
-                .setMeasTime(dictlist.get(7))
+                .setScanType(dictList.get(0))
+                .setTimeStamp(dictList.get(1))
+                .setSpectStart(dictList.get(2))
+                .setSpectEnd(dictList.get(3))
+                .setNumPoints(dictList.get(4))
+                .setResolution(dictList.get(5))
+                .setNumAverages(dictList.get(6))
+                .setMeasTime(dictList.get(7))
                 .build();
         String message="failed";
         try {
             ServerResponse reply = stub.storeToELK(dictSchema);
             message = reply.getMessage();
         }catch (Exception e){
-            System.out.println(GrpcTask.class.getName()+ message+ "76 line");
+            Log.e( TAG,"  "+ message);
         }
         return message;
     }
