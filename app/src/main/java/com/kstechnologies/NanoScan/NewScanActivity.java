@@ -871,7 +871,8 @@ public class NewScanActivity extends Activity {
     private void sendToGrpcServer(KSTNanoSDK.ScanResults scanResults, String nameTs, ArrayList<String> dict) {
 
         GrpcTask task = new GrpcTask(this,scanResults,nameTs,dict);
-        task.doInBackground();
+        String result = task.doInBackground();
+        Toast.makeText(mContext, result,Toast.LENGTH_LONG).show();
     }
 
     /**
