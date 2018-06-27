@@ -69,12 +69,12 @@ public class GrpcTask extends AsyncTask<String, Void, String> {
                 .setNumAverages(dictList.get(6))
                 .setMeasTime(dictList.get(7))
                 .build();
-        String message="failed";
+        String message=" data failed send";
         try {
             ServerResponse reply = stub.storeToELK(dictSchema);
             message = reply.getMessage();
         }catch (Exception e){
-            Log.e( TAG,"  "+ message);
+            Log.e( TAG, message);
         }
         return message;
     }
