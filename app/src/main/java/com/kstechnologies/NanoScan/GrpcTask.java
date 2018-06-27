@@ -65,9 +65,13 @@ public class GrpcTask extends AsyncTask<String, Void, String> {
                 .setNumAverages(dictlist.get(6))
                 .setMeasTime(dictlist.get(7))
                 .build();
-        ServerResponse reply = stub.storeToELK(dictSchema);
-        String message = reply.getMessage();
-
+        String message="failed";
+        try {
+            ServerResponse reply = stub.storeToELK(dictSchema);
+            message = reply.getMessage();
+        }catch (Exception e){
+            System.out.println(GrpcTask.class.getName()+ message+ "76 line");
+        }
         return message;
     }
 
